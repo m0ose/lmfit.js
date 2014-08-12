@@ -1,5 +1,9 @@
 var Module = {
+    "DEBUG":false,
     "print": (function(text) {
+        if( !this.DEBUG){
+            return
+        }
         if (typeof importScripts === "function") postMessage(text);
         else console.log(text)
     }),

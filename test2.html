@@ -1,0 +1,269 @@
+<html>
+
+<head>
+
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script type="text/javascript" src="nv.d3.js"></script>
+<script type="text/javascript" src="./lmfit.js"></script>
+<script>
+
+
+window.lmfit = Module.fit
+
+function init() {
+  sinwave()
+  squareRoot()
+  polynomial()
+}
+
+
+function sinwave(){
+  //
+  //  Make some data up
+  //
+  var dataInT = []
+  var dataInY = []
+  for (var i = 0; i < 7; i = i + Math.random() * 0.1) {
+    var t2 = i
+    var y2 =  Math.sin(1.9*t2) + (Math.random() -0.5)/2
+    dataInT.push(t2)
+    dataInY.push(y2)
+  }
+
+  //
+  // Fit the data
+  //
+  var fitfunct = function(t, p) {
+    return Math.sin(t*p[0])//p[0] * Math.sqrt(t);
+  }
+
+  var data = {
+    f: fitfunct,
+    n: 1,
+    par: new Float64Array([1.4]),
+    m: dataInT.length,
+    t: new Float64Array(dataInT),
+    y: new Float64Array(dataInY)
+  }
+
+  var res = lmfit(data)
+  console.log(res)
+
+  //
+  // make d3 chart data
+  //
+  var chartdata = []
+  var fitchart = []
+  for (var i = 0; i < data.t.length; i++) {
+    chartdata.push({
+      x: data.t[i],
+      y: data.y[i]
+    })
+    fitchart.push({
+      x: data.t[i],
+      y: fitfunct(data.t[i], res.params)
+    })
+  }
+  console.log(chartdata, fitchart)
+
+  plotData("chart1",[{
+    values: chartdata,
+    key: 'Input data',
+    color: '#ff7f0e'
+  }, {
+    values: fitchart,
+    key: 'Fit data',
+    color: '#2ca02c'
+  }])
+}
+
+
+
+
+
+
+function squareRoot(){
+  //
+  //  Make some data up
+  //
+  var dataInT = []
+  var dataInY = []
+  for (var i = 0; i < 400; i = i + Math.random() * 20) {
+    var t2 = i
+    var y2 =  4*Math.sqrt( t2) + 10 + 5*Math.random()
+    dataInT.push(t2)
+    dataInY.push(y2)
+  }
+
+  //
+  // Fit the data
+  //
+  var fitfunct = function(t, p) {
+    return p[0] * Math.sqrt(t) + p[1];
+  }
+
+  var data = {
+    f: fitfunct,
+    n: 2,
+    par: new Float64Array([1.0,3.0]),
+    m: dataInT.length,
+    t: new Float64Array(dataInT),
+    y: new Float64Array(dataInY)
+  }
+
+  var res = lmfit(data)
+  console.log(res)
+
+  //
+  // make d3 chart data
+  //
+  var chartdata = []
+  var fitchart = []
+  for (var i = 0; i < data.t.length; i++) {
+    chartdata.push({
+      x: data.t[i],
+      y: data.y[i]
+    })
+    fitchart.push({
+      x: data.t[i],
+      y: fitfunct(data.t[i], res.params)
+    })
+  }
+  console.log(chartdata, fitchart)
+
+  plotData("chart2",[{
+    values: chartdata,
+    key: 'Input data',
+    color: '#ff7f0e'
+  }, {
+    values: fitchart,
+    key: 'Fit data',
+    color: '#2ca02c'
+  }])
+}
+
+
+function polynomial(){
+  //
+  //  Make some data up
+  //
+  var dataInT = []
+  var dataInY = []
+  var pow = Math.pow
+  for (var i = 0; i < 10; i = i + Math.random() * 0.4) {
+    var t2 = i
+    var y2 =  0.4*pow(t2,3) - 5*pow(t2,2) + 7*pow(t2,1) - 11 +Math.random()*10
+    dataInT.push(t2)
+    dataInY.push(y2)
+  }
+
+  //
+  // Fit the data
+  //
+  var fitfunct = function(t, p) {
+    return p[0]*pow(t,3) + p[1]*pow(t,2) + p[2]*pow(t,1) + p[3]
+  }
+
+  var data = {
+    f: fitfunct,
+    n: 4,
+    par: new Float64Array([1.0,3.0,6,9]),
+    m: dataInT.length,
+    t: new Float64Array(dataInT),
+    y: new Float64Array(dataInY)
+  }
+
+  var res = lmfit(data)
+  console.log(res)
+
+  //
+  // make d3 chart data
+  //
+  var chartdata = []
+  var fitchart = []
+  for (var i = 0; i < data.t.length; i++) {
+    chartdata.push({
+      x: data.t[i],
+      y: data.y[i]
+    })
+    fitchart.push({
+      x: data.t[i],
+      y: fitfunct(data.t[i], res.params)
+    })
+  }
+  console.log(chartdata, fitchart)
+
+  plotData("chart3",[{
+    values: chartdata,
+    key: 'Input data',
+    color: '#ff7f0e'
+  }, {
+    values: fitchart,
+    key: 'Fit data',
+    color: '#2ca02c'
+  }])
+}
+
+
+
+function plotData(divId, data) {
+
+  nv.addGraph(function() {
+    var chart1 = nv.models.lineChart()
+      .useInteractiveGuideline(true);
+
+    chart1.xAxis
+      .axisLabel('Time (t)')
+      .tickFormat(d3.format(',r'));
+
+    chart1.yAxis
+      .axisLabel('Y')
+      .tickFormat(d3.format('.02f'));
+
+    d3.select("#" + divId + ' svg')
+      .datum(data)
+      .transition().duration(500)
+      .call(chart1);
+
+    nv.utils.windowResize(chart1.update);
+
+    return chart1;
+  });
+}
+
+</script>
+</head>
+
+<body onload="init()"> 
+
+<style>
+
+#chart1 svg {
+  height: 400px;
+}
+
+.plop svg {
+    height: 400px;
+
+}
+
+</style>
+
+
+<div id="chart1" class="plop">
+  <svg></svg>
+</div>
+<div id="chart2" class="plop">
+  <svg></svg>
+</div>
+<div id="chart3" class="plop">
+  <svg></svg>
+</div>
+
+
+
+
+</body>
+
+
+</html>

@@ -19,7 +19,7 @@ function init() {
   var dataInY = []
   for (var i = 0; i < 400; i = i + Math.random() * 20) {
     var t2 = i
-    var y2 = 5 * Math.sqrt(t2) + Math.random() * 4
+    var y2 =  Math.sin(t2/50) + (Math.random() - 0.5)/2
     dataInT.push(t2)
     dataInY.push(y2)
   }
@@ -28,13 +28,13 @@ function init() {
   // Fit the data
   //
   var fitfunct = function(t, p) {
-    return p[0] * Math.sqrt(t);
+    return Math.sin(t/p[0])//p[0] * Math.sqrt(t);
   }
 
   var data = {
     f: fitfunct,
     n: 1,
-    par: new Float64Array([1.0]),
+    par: new Float64Array([40.0]),
     m: dataInT.length,
     t: new Float64Array(dataInT),
     y: new Float64Array(dataInY)

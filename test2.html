@@ -238,25 +238,43 @@ function plotData(divId, data) {
 
 <style>
 
-#chart1 svg {
-  height: 400px;
+.plop {
+    background: #ddd;
+    padding: 20px;
+    margin: 30px;
+    border-radius: 12px 12px 12px 12px;
 }
 
 .plop svg {
     height: 400px;
 
 }
+.plop div {
+    background: #eee;
+    margin: 10px;
+    padding: 10px;
+    border-radius: 2px 2px 2px 2px;
+}
 
 </style>
 
 
 <div id="chart1" class="plop">
+  <div>
+  Fitting of a sin wave
+  </div>
   <svg></svg>
 </div>
 <div id="chart2" class="plop">
+  <div>
+  Fitting of sqrt function
+  </div>
   <svg></svg>
 </div>
 <div id="chart3" class="plop">
+  <div>
+  Fitting of a third degree polynomial
+  </div>
   <svg></svg>
 </div>
 
